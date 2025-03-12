@@ -1,57 +1,36 @@
-@ -1,40 +1,29 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const app = express();
-const port = process.env.PORT || 3000;
 
-// Per gestire il body delle richieste POST (necessario per leggere i dati JSON)
-// Middleware per il parsing dei JSON nel corpo della richiesta
-app.use(express.json());
+// Middleware per interpretare il corpo delle richieste in formato JSON
+app.use(bodyParser.json());
 
-// Variabile per memorizzare l'episodio (può essere sostituita con un database)
+// Memorizza i dati (in un ambiente di produzione dovresti usare un database)
 let lastWatchedEpisode = {
-    episode: 10,
-    playbackPosition: 1200.0 // posizione in secondi
+    episode: 1,
+    playbackPosition: 0
 };
 
-// Endpoint GET per ottenere l'episodio
-app.get('/api/get_episode', (req, res) => {
+// Endpoint per ottenere l'episodio salvato
+app.get('/api/lastWatchedEpisode', (req, res) => {
     res.json(lastWatchedEpisode);
 });
 
-// Endpoint POST per salvare l'episodio
-app.post('/api/save_episode', (req, res) => {
+// Endpoint per salvare un nuovo episodio
+app.post('/api/lastWatchedEpisode', (req, res) => {
     const { episode, playbackPosition } = req.body;
 
-    // Verifica se i dati sono validi
+    // Verifica che i dati siano validi
     if (typeof episode === 'number' && typeof playbackPosition === 'number') {
-        // Salva i dati
         lastWatchedEpisode = { episode, playbackPosition };
-        console.log('Dati salvati:', lastWatchedEpisode);
-        
-        // Rispondi con un messaggio di successo
-        res.status(200).json({ message: 'Episodio salvato con successo!' });
+        res.status(200).json({ message: 'Episodio salvato correttamente.' });
     } else {
-        // Rispondi con errore se i dati non sono validi
         res.status(400).json({ error: 'Dati non validi.' });
-    // Verifica che i dati siano presenti nel corpo della richiesta
-    if (!episode || !playbackPosition) {
-        return res.status(400).json({ error: 'Mancano i dati necessari' });
     }
-
-    // Logica per salvare i dati, ad esempio in un database
-    // Qui potresti fare qualcosa come salvare su database
-
-    console.log(`Episodio salvato: ${episode}, posizione: ${playbackPosition}`);
-
-    // Risposta JSON di successo
-    res.status(200).json({ message: 'Episodio salvato con successo' });
 });
 
-// Avvia il server
-app.listen(port, () => {
-    console.log(`Server in ascolto su http://localhost:${port}`);
-// Avvio del server
-const PORT = process.env.PORT || 3000;
+// Impostiamo la porta di ascolto (assicurati che sia 8080 per Railway)
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-    console.log(`Server in esecuzione su http://localhost:${PORT}`);
+    console.log(`Server in ascolto sulla porta ${PORT}`);
 });
